@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Dashboard from './components/Dashboard/Dashboard';
 import PortfolioView from './components/Portfolio/PortfolioView';
+import AlertsView from './components/Alerts/AlertsView';
 import WalletInput from './components/Common/WalletInput';
 import Navigation from './components/Common/Navigation';
 import './App.css';
@@ -45,10 +46,7 @@ function App() {
                 <PortfolioView walletAddress={activeWallet} />
               )}
               {currentView === 'alerts' && (
-                <div className="coming-soon">
-                  <h2>🔔 Alerts & Notifications</h2>
-                  <p>Smart alerts system coming soon...</p>
-                </div>
+                <AlertsView />
               )}
             </div>
           )}
