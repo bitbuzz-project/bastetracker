@@ -2,6 +2,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Wallet, DollarSign, Activity, Fuel } from 'lucide-react';
+import TransactionHistory from './TransactionHistory';
 
 interface DashboardProps {
   walletAddress: string;
@@ -102,15 +103,12 @@ const Dashboard: React.FC<DashboardProps> = ({ walletAddress }) => {
         <div className="section">
           <h3>💼 Token Holdings</h3>
           <div className="coming-soon-small">
-            <p>Token portfolio coming in next step...</p>
+            <p>Switch to Portfolio tab to see complete token breakdown with charts!</p>
           </div>
         </div>
 
-        <div className="section">
-          <h3>📈 Recent Activity</h3>
-          <div className="coming-soon-small">
-            <p>Transaction history coming in next step...</p>
-          </div>
+        <div className="section full-width">
+          <TransactionHistory walletAddress={walletAddress} />
         </div>
       </div>
 

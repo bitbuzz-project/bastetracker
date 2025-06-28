@@ -35,9 +35,18 @@ const WalletInput: React.FC<WalletInputProps> = ({ onWalletSubmit, currentWallet
     const value = e.target.value;
     setInputValue(value);
     
-    // Validate after user stops typing (debounce)
+    // Basic validation first
+    if (value.length === 42 && value.startsWith('0x')) {
+      setValidationStatus('valid');
+    } else if (value.length > 0) {
+      setValidationStatus('invalid');
+    } else {
+      setValidationStatus(null);
+    }
+    
+    // Then validate with backend after user stops typing (debounce)
     setTimeout(() => {
-      if (value === inputValue) {
+      if (value === inputValue && value.length === 42 && value.startsWith('0x')) {
         validateAddress(value);
       }
     }, 500);
@@ -45,7 +54,8 @@ const WalletInput: React.FC<WalletInputProps> = ({ onWalletSubmit, currentWallet
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validationStatus === 'valid') {
+    // Allow submission if address looks valid (42 chars, starts with 0x)
+    if (inputValue.length === 42 && inputValue.startsWith('0x')) {
       onWalletSubmit(inputValue);
       setInputValue('');
       setValidationStatus(null);
@@ -75,7 +85,7 @@ const WalletInput: React.FC<WalletInputProps> = ({ onWalletSubmit, currentWallet
         </div>
         <button 
           type="submit" 
-          disabled={validationStatus !== 'valid'}
+          disabled={!(inputValue.length === 42 && inputValue.startsWith('0x'))}
           className="track-button"
         >
           Track Wallet

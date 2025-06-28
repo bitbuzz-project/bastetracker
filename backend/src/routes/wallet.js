@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const baseChain = require('../services/baseChain');
 const tokenService = require('../services/tokenService');
+const transactionService = require('../services/transactionService');
 
 // Get wallet overview (ETH balance + basic info)
 router.get('/overview/:address', async (req, res) => {
@@ -85,22 +86,48 @@ router.get('/token/:address/:tokenAddress', async (req, res) => {
 router.get('/transactions/:address', async (req, res) => {
   try {
     const { address } = req.params;
+    const { limit = 50 } = req.query;
     
     if (!baseChain.isValidAddress(address)) {
       return res.status(400).json({ error: 'Invalid wallet address' });
     }
 
-    const transactions = await baseChain.getTransactionHistory(address);
+    const transactionData = await transactionService.getTransactionHistory(address, parseInt(limit));
+    
+    res.json(transactionData);
+  } catch (error) {
+    console.error('Transaction history error:', error);
+    res.status(500).json({ 
+      error: 'Failed to get transaction history',
+      details: error.message 
+    });
+  }
+});
+
+// Get transaction statistics
+router.get('/stats/:address', async (req, res) => {
+  try {
+    const { address } = req.params;
+    const { days = 30 } = req.query;
+    
+    if (!baseChain.isValidAddress(address)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+
+    const stats = await transactionService.getTransactionStats(address, parseInt(days));
     
     res.json({
       address,
-      transactions,
-      count: transactions.length,
+      period: `${days} days`,
+      ...stats,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Transaction history error:', error);
-    res.status(500).json({ error: 'Failed to get transaction history' });
+    console.error('Transaction stats error:', error);
+    res.status(500).json({ 
+      error: 'Failed to get transaction statistics',
+      details: error.message 
+    });
   }
 });
 
